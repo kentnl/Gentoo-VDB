@@ -1,0 +1,24 @@
+{
+  "prereqs": {
+    "runtime": {
+      "requires": {
+        "perl":                               "5.006"
+      }
+    },
+    "test": {
+      "requires": {
+        "Test::More":       "0.88"
+      }
+    }
+  },
+  "resources": {
+    "bugtracker": {
+      "web":  "https://github.com/kentnl/Gentoo-VDB/issues"
+    },
+    "repository": {
+      "type": "git",
+      "url":  "https://github.com/kentnl/Gentoo-VDB",
+      "web":  "https://github.com/kentnl/Gentoo-VDB"
+    }
+  }
+}
