@@ -45,7 +45,7 @@ sub categories { $_[0]->{backend}->categories( @_[ 1 .. $#_ ] ) }
 # ->packages({ in => 'dev-perl' })  -> list of CAT/PN-V in dev-perl/
 sub packages { $_[0]->{backend}->packages( @_[ 1 .. $#_ ] ) }
 
-# ->properties({ for => 'cat/pn-v' })  -> list of KEY
+# ->properties({ for => 'cat/pn-v' })  -> list of HASH
 sub properties { $_[0]->{backend}->properties( @_[ 1 .. $#_ ] ) }
 
 # ->get_property({ for => 'cat/pn-v', property => 'propname' }) -> HASH
@@ -123,6 +123,51 @@ or
     sed -r 's|^.*/([^/]+)/([^/]+)$|\1/\2|'
 
 And should be similarly performant.
+
+=head2 C<properties>
+
+Returns a list of hash entries describing properties of the given C<CAT/PN-VERSION>
+
+  my ( @properties ) = $vdb->properties({ for => 'dev-lang/perl-5.22.1-r1' });
+
+A property contains:
+
+  {
+    property =>  .... # the name of the property ( backend specific )
+    label    =>  .... # usually the same as 'property' but is defined by
+                      # Gentoo::VDB, some special cases like
+                      # 'special:source_ebuild' and 'unknown:' . $property
+                      # exist.
+    type     =>  .... # Gentoo::VDB specific hint for decoding the
+                      # data.
+    for      =>  .... # CAT/PN-V entry
+
+    # Selectively ...
+    content  =>       # For "generic" types like "file", this is generally
+                      # a MIME type for the undelying decoded data.
+                      # ie: No VDB Specific decoding hint, just amorphous
+                      # blob of bytes that have to be handled thusly
+                      # eg: text/plain, application/octet-stream
+
+    encoding =>       # if the data has some sort of protocol encoding,
+                      # for instance, a bzip encoded text source
+                      # this will be populated respectively, eg:
+                      # application/x-bzip2
+  }
+
+A given record may overlap with another record in part, eg: One "property"
+may yield 2 different hashes with different labels and types.
+
+But this is just an idea at this stage, and there's no implementation behind it.
+
+Mostly pertinent for large objects like `environment.bz2` that can yield additional
+metadata.
+
+=head2 C<get_property>
+
+Fetch a given property as a string blob
+
+  my $prop = $vdb->get_property({ for => 'dev-lang/perl-5.22.1-r1', property => 'BackendName' });
 
 =head1 AUTHOR
 

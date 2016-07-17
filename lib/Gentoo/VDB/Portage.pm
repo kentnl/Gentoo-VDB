@@ -146,6 +146,151 @@ sub packages {
     return @packages;
 }
 
+sub _property_files_iterator {
+    my ( $self, $config ) = @_;
+    return sub { undef }
+      unless $config->{'for'};
+    my $catdir = $self->_path . '/' . $config->{'for'};
+    return sub { undef }
+      unless -d $catdir;
+    my $iterator = __dir_iterator($catdir);
+    return sub {
+
+        while (1) {
+            my $file = $iterator->();
+            return undef if not defined $file;
+            next if $file =~ /\A[.]/x;
+            return $file;
+        }
+    };
+}
+
+my $ENATIVE = {
+    BUILD_TIME        => 'timestamp',
+    CATEGORY          => 'string',
+    CBUILD            => 'string',
+    CC                => 'string',
+    CFLAGS            => 'string',
+    CHOST             => 'string',
+    CONTENTS          => 'contents',
+    COUNTER           => 'number',
+    CTARGET           => 'string',
+    CXX               => 'string',
+    CXXFLAGS          => 'string',
+    DEBUGBUILD        => 'flag-file',
+    DEFINED_PHASES    => 'space-separated-list',
+    DEPEND            => 'dependencies',
+    DESCRIPTION       => 'string',
+    EAPI              => 'string',
+    FEATURES          => 'use-list',
+    'environment.bz2' => {
+        type     => 'file',
+        encoding => 'application/x-bzip2',
+        content  => 'text/plain'
+    },
+    HOMEPAGE             => 'url-list',
+    INHERITED            => 'space-separated-list',
+    IUSE                 => 'use-list',
+    IUSE_EFFECTIVE       => 'use-list',
+    KEYWORDS             => 'keywords',
+    LDFLAGS              => 'string',
+    LICENSE              => 'licenses',
+    NEEDED               => 'elf-dependency-map',
+    'NEEDED.ELF.2'       => 'arch-elf-dependency-map',
+    PDEPEND              => 'dependencies',
+    PF                   => 'string',
+    PKGUSE               => 'use-list',
+    PROVIDES             => 'arch-so-map',
+    QA_CONFIGURE_OPTIONS => 'string',
+    QA_PREBUILT          => 'space-separated-list',
+    RDEPEND              => 'dependencies',
+    repository           => 'string',
+    REQUIRES             => 'arch-so-map',
+    REQUIRES_EXCLUDE     => 'space-separated-list',
+    RESTRICT             => 'space-seperated-list',
+    SIZE                 => 'bytecount',
+    SLOT                 => 'string',
+    USE                  => 'use-list',
+};
+
+my @ERULES = (
+    [
+        sub { $_[0] =~ /\.ebuild\z/ },
+        {
+            label   => 'special:source_ebuild',
+            type    => 'file',
+            content => 'text/plain'
+        }
+    ],
+);
+
+sub properties {
+    my ( $self, @args ) = @_;
+    my $config = { ref $args[0] ? %{ $args[0] } : @args };
+    my (@proplist);
+    my $it = $self->_property_files_iterator($config);
+    while ( my $entry = $it->() ) {
+        my $matched = 0;
+        if ( exists $ENATIVE->{$entry} ) {
+            $matched = 1;
+            push @proplist,
+              {
+                property => $entry,
+                label    => $entry,
+                for      => $config->{for},
+                (
+                    ref $ENATIVE->{$entry}
+                    ? %{ $ENATIVE->{$entry} }
+                    : ( type => $ENATIVE->{$entry} )
+                ),
+              };
+        }
+        for my $rule (@ERULES) {
+            next unless $rule->[0]->($entry);
+            $matched = 1;
+            push @proplist,
+              {
+                property => $entry,
+                label    => $entry,
+                for      => $config->{for},
+                (
+                    ref $rule->[1]
+                    ? %{ $rule->[1] }
+                    : ( type => $rule->[1] )
+                ),
+              };
+        }
+        if ( not $matched ) {
+            push @proplist,
+              {
+                property => $entry,
+                label    => 'unknown:' . $entry,
+                for      => $config->{for},
+                type     => 'file',
+                content  => 'application/octet-stream',
+              };
+        }
+    }
+    return @proplist;
+}
+
+sub get_property {
+    my ( $self, @args ) = @_;
+    my $config = { ref $args[0] ? %{ $args[0] } : @args };
+    return undef unless exists $config->{for} and exists $config->{property};
+    my $content;
+    open my $fh, '<',
+      $self->_path . '/' . $config->{for} . '/' . $config->{property}
+      or return undef;
+    {
+        local $/ = undef;
+        $content = <$fh>;
+    }
+    close $fh;
+    chomp $content;
+    return $content;
+}
+
 1;
 
 =head1 NAME
@@ -163,3 +308,5 @@ This software is copyright (c) 2016 by Kent Fredric.
 This is free software; you can redistribute it and/or modify it under the same terms as the Perl 5 programming language system itself.
 
 =cut
+
+## Please see file perltidy.ERR

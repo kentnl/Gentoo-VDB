@@ -8,8 +8,10 @@ META.yml
 examples/ls_categories.pl
 examples/ls_packages.pl
 examples/ls_packages_perl.pl
+examples/ls_properties.pl
 lib/Gentoo/VDB.pm
 lib/Gentoo/VDB/Portage.pm
 metamerge.json
 t/portage-categories.t
 t/portage-packages.t
+t/portage-properties.t
