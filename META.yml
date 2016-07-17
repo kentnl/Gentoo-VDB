@@ -17,6 +17,9 @@ provides:
   Gentoo::VDB:
     file: lib/Gentoo/VDB.pm
     version: '0.001000'
+  Gentoo::VDB::Portage:
+    file: lib/Gentoo/VDB/Portage.pm
+    version: '0.001000'
 requires:
   perl: '5.006'
 resources:

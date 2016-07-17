@@ -33,7 +33,7 @@ sub new {
     my $backend_name = delete $config->{backend} || 'portage';
     die "Unknown backend $backend_name"
       unless exists $BACKENDS->{$backend_name};
-    my $backend_module = $BACKENDS->{$backend}->();
+    my $backend_module = $BACKENDS->{$backend_name}->();
     my $backend        = $backend_module->new($config);
     return bless { backend => $backend, config => $config }, $self;
 }

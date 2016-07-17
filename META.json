@@ -39,6 +39,10 @@
       "Gentoo::VDB" : {
          "file" : "lib/Gentoo/VDB.pm",
          "version" : "0.001000"
+      },
+      "Gentoo::VDB::Portage" : {
+         "file" : "lib/Gentoo/VDB/Portage.pm",
+         "version" : "0.001000"
       }
    },
    "release_status" : "stable",
