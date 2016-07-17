@@ -57,6 +57,73 @@ sub get_property { $_[0]->{backend}->get_property( @_[ 1 .. $#_ ] ) }
 
 Gentoo::VDB - Simple API for querying Gentoo's installed-package database
 
+=head1 SYNOPSIS
+
+  use Gentoo::VDB;
+  my $vdb = Gentoo::VDB->new();
+
+  my (@categories) = $vdb->categories;
+  ## Note: next line is slow
+  my (@packages)   = $vdb->packages;
+  ## Much faster
+  my (@packages)   = $vdb->packages({ in => 'dev-perl' });
+
+=head1 METHODS
+
+=head2 C<new>
+
+  my $instance = Gentoo::VDB->new(\%ARGS);
+
+=head2 C<categories>
+
+Returns a list of single-token category names that are
+valid.
+
+  my (@categories) = $vdb->categories;
+
+Note: Categories that have no definite installed
+packages are omitted, even if their dirs are present.
+
+This is mostly because this is the only way to disambiguate between
+a temporary directory and a category.
+
+It is mostly equivalent to
+
+  find /var/db/pkg \
+    -maxdepth 1 \
+    -mindepth 1 \
+    -not -empty \
+    -printf '%f\n'
+
+And should be similarly performant.
+
+=head2 C<packages>
+
+Returns a list of valid packages in C<CAT/PN-VERSION> form.
+
+  my ( @packages ) = $vdb->packages();
+  # Show only packages in dev-perl, much faster
+  my ( @packages ) = $vdb->packages({ in => 'dev-perl' });
+
+This is mostly equivalent to:
+
+  find /var/db/pkg      \
+      -maxdepth 2       \
+      -mindepth 2       \
+      -not -empty       \
+      -printf '%p\n' |  \
+    sed -r 's|^.*/([^/]+)/([^/]+)$|\1/\2|'
+or
+
+  find /var/db/pkg/dev-perl   \
+      -maxdepth 1             \
+      -mindepth 1             \
+      -not -empty             \
+      -printf '%p\n'        | \
+    sed -r 's|^.*/([^/]+)/([^/]+)$|\1/\2|'
+
+And should be similarly performant.
+
 =head1 AUTHOR
 
 Kent Fredric <kentnl@cpan.org>
@@ -67,4 +134,4 @@ This software is copyright (c) 2016 by Kent Fredric.
 
 This is free software; you can redistribute it and/or modify it under the same terms as the Perl 5 programming language system itself.
 
-=cut 
+=cut
