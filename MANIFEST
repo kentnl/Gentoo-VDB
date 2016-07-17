@@ -12,3 +12,4 @@ lib/Gentoo/VDB.pm
 lib/Gentoo/VDB/Portage.pm
 metamerge.json
 t/portage-categories.t
+t/portage-packages.t
