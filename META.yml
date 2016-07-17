@@ -21,6 +21,7 @@ provides:
     file: lib/Gentoo/VDB/Portage.pm
     version: '0.001000'
 requires:
+  Path::Tiny: '0.040'
   perl: '5.006'
 resources:
   bugtracker: https://github.com/kentnl/Gentoo-VDB/issues

@@ -10,6 +10,8 @@ our $VERSION = '0.001000';
 
 # AUTHORITY
 
+use Path::Tiny qw( path );
+
 sub new {
     my ( $class, @args ) = @_;
     my $config = { ref $args[0] ? %{ $args[0] } : @args };
@@ -18,6 +20,13 @@ sub new {
 
 sub _path {
     return ( $_[0]->{path} ||= '/var/db/pkg' );
+}
+
+sub _abspath {
+    my $root = path( $_[0]->_path )->absolute->realpath;
+    my $path = path( $_[0]->_path, @_[ 1 .. $#_ ] )->absolute->realpath;
+    die "Illegal path, outside of VDB" unless $root->subsumes($path);
+    return $path->stringify;
 }
 
 sub __dir_iterator {
@@ -51,11 +60,11 @@ sub _category_iterator {
             next if $category =~ /\A[.]/x;
 
             # Validate category to have at least one package with a file
-            my $_pkg_iterator = __dir_iterator( $root . '/' . $category );
+            my $_pkg_iterator = __dir_iterator( $self->_abspath($category) );
             while ( my $package = $_pkg_iterator->() ) {
                 next if $package =~ /\A[.]/x;
                 my $_file_iterator =
-                  __dir_iterator( $root . '/' . $category . '/' . $package );
+                  __dir_iterator( $self->_abspath( $category, $package ) );
                 while ( my $file = $_file_iterator->() ) {
                     next if $file =~ /\A[.]/x;
                     ## Found one package with one file, category is valid
@@ -80,16 +89,17 @@ sub _package_iterator {
     my ( $self, $config ) = @_;
     my $root = $self->_path;
     if ( $config->{in} ) {
+        my $catdir = $self->_abspath( $config->{in} );
         return sub { return undef }
-          unless -d $root . '/' . $config->{in};
-        my $_pkg_iterator = __dir_iterator( $root . '/' . $config->{in} );
+          unless -d $catdir;
+        my $_pkg_iterator = __dir_iterator($catdir);
         return sub {
             while (1) {
                 my $package = $_pkg_iterator->();
                 return undef if not defined $package;
                 next if $package =~ /\A[.]/x;
-                my $_file_iterator = __dir_iterator(
-                    $root . '/' . $config->{in} . '/' . $package );
+                my $_file_iterator =
+                  __dir_iterator( $self->_abspath( $config->{in}, $package ) );
                 while ( my $file = $_file_iterator->() ) {
                     next if $file =~ /\A[.]/x;
                     ## Found one package with one file, package is valid
@@ -108,7 +118,7 @@ sub _package_iterator {
     return sub { return undef }
       unless defined $category;
 
-    my $_pkg_iterator = __dir_iterator( $root . '/' . $category );
+    my $_pkg_iterator = __dir_iterator( $self->_abspath($category) );
 
     return sub {
         while (1) {
@@ -118,14 +128,15 @@ sub _package_iterator {
                 $category = $_cat_iterator->();
                 return undef if not defined $category;
                 if ( defined $category ) {
-                    $_pkg_iterator = __dir_iterator( $root . '/' . $category );
+                    $_pkg_iterator =
+                      __dir_iterator( $self->_abspath($category) );
                     next;
                 }
                 next;
             }
             next if $package =~ /\A[.]/x;
             my $_file_iterator =
-              __dir_iterator( $root . '/' . $category . '/' . $package );
+              __dir_iterator( $self->_abspath( $category, $package ) );
             while ( my $file = $_file_iterator->() ) {
                 next if $file =~ /\A[.]/x;
                 ## Found one package with one file, package is valid
@@ -150,7 +161,7 @@ sub _property_files_iterator {
     my ( $self, $config ) = @_;
     return sub { undef }
       unless $config->{'for'};
-    my $catdir = $self->_path . '/' . $config->{'for'};
+    my $catdir = $self->_abspath( $config->{'for'} );
     return sub { undef }
       unless -d $catdir;
     my $iterator = __dir_iterator($catdir);
@@ -277,10 +288,10 @@ sub properties {
 sub get_property {
     my ( $self, @args ) = @_;
     my $config = { ref $args[0] ? %{ $args[0] } : @args };
-    return undef unless exists $config->{for} and exists $config->{property};
+    return undef
+      unless exists $config->{for} and exists $config->{property};
     my $content;
-    open my $fh, '<',
-      $self->_path . '/' . $config->{for} . '/' . $config->{property}
+    open my $fh, '<', $self->_abspath( $config->{for}, $config->{property} )
       or return undef;
     {
         local $/ = undef;

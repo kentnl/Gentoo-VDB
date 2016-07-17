@@ -2,6 +2,7 @@
   "prereqs": {
     "runtime": {
       "requires": {
+        "Path::Tiny":                         "0.040",
         "perl":                               "5.006"
       }
     },
