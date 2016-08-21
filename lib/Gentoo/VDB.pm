@@ -4,7 +4,7 @@ use warnings;
 
 package Gentoo::VDB;
 
-our $VERSION = '0.001001';
+our $VERSION = '0.001002';
 
 # ABSTRACT: Simple API for querying VDB Implementations
 

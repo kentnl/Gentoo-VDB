@@ -51,11 +51,11 @@
    "provides" : {
       "Gentoo::VDB" : {
          "file" : "lib/Gentoo/VDB.pm",
-         "version" : "0.001001"
+         "version" : "0.001002"
       },
       "Gentoo::VDB::Portage" : {
          "file" : "lib/Gentoo/VDB/Portage.pm",
-         "version" : "0.001001"
+         "version" : "0.001002"
       }
    },
    "release_status" : "stable",
@@ -69,6 +69,6 @@
          "web" : "https://github.com/kentnl/Gentoo-VDB"
       }
    },
-   "version" : "0.001001",
+   "version" : "0.001002",
    "x_serialization_backend" : "JSON::PP version 2.27400"
 }
