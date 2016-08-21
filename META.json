@@ -27,7 +27,7 @@
       },
       "runtime" : {
          "requires" : {
-            "Path::Tiny" : "0.040",
+            "Path::Tiny" : "0.048",
             "perl" : "5.006"
          }
       },

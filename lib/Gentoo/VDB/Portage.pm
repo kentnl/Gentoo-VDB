@@ -10,7 +10,7 @@ our $VERSION = '0.001002';
 
 # AUTHORITY
 
-use Path::Tiny qw( path );
+use Path::Tiny 0.048 qw( path );  # subsumes
 
 sub new {
     my ( $class, @args ) = @_;

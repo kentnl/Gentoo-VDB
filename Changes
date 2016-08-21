@@ -1,5 +1,5 @@
 0.001002 - 2016-08-21
- -
+ - Require Path::Tiny 0.048 for "subsumes", thanks NJH Smokers
 
 0.001001 - 2016-08-21
  - Add extra tests expected to work outside Gentoo targets.
