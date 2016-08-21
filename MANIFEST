@@ -12,6 +12,8 @@ examples/ls_properties.pl
 lib/Gentoo/VDB.pm
 lib/Gentoo/VDB/Portage.pm
 metamerge.json
+t/fake-portage-categories.t
+t/lib/KENTNL/FakeVDB.pm
 t/portage-categories.t
 t/portage-packages.t
 t/portage-properties.t
