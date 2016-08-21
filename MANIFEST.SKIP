@@ -1,4 +1,5 @@
 ^Gentoo-VDB-.*
+.*\.orig$
 
 #!start included /home/kent/perl5/perlbrew/perls/5.22.1-nossp-sdbm-nopmc/lib/5.22.1/ExtUtils/MANIFEST.SKIP
 # Avoid version control files.
