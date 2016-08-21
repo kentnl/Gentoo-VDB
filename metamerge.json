@@ -14,6 +14,18 @@
       "recommends": {
         "Test::TempDir::Tiny": "0"
       }
+    },
+    "develop": {
+      "requires": {
+        "CPAN::Meta" : "2.150010"
+      }
+    },
+    "x_examples": {
+      "requires": {
+        "Data::Dump": "0",
+        "Term::ANSIColor": "4.00",
+        "Text::Wrap": "0"
+      }
     }
   },
   "resources": {
