@@ -16,15 +16,15 @@ name: Gentoo-VDB
 provides:
   Gentoo::VDB:
     file: lib/Gentoo/VDB.pm
-    version: '0.001000'
+    version: '0.001001'
   Gentoo::VDB::Portage:
     file: lib/Gentoo/VDB/Portage.pm
-    version: '0.001000'
+    version: '0.001001'
 requires:
   Path::Tiny: '0.040'
   perl: '5.006'
 resources:
   bugtracker: https://github.com/kentnl/Gentoo-VDB/issues
   repository: https://github.com/kentnl/Gentoo-VDB
-version: '0.001000'
+version: '0.001001'
 x_serialization_backend: 'CPAN::Meta::YAML version 0.018'

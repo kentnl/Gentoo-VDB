@@ -4,7 +4,7 @@ use warnings;
 
 package Gentoo::VDB::Portage;
 
-our $VERSION = '0.001000';
+our $VERSION = '0.001001';
 
 # ABSTRACT: VDB Query Implementation for Portage/Emerge
 
