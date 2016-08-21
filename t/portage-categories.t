@@ -2,10 +2,10 @@ use strict;
 use warnings;
 
 BEGIN {
-  if ( !-e '/var/db/pkg' or !-r '/var/db/pkg' ) {
-    print "1..0 # SKIP this test requires a readable Gentoo Portage database in /var/db/pkg";
-    exit;
-  }
+    local @INC = @INC;
+    unshift @INC, 't/lib';
+    require KENTNL::IsVDB;
+    KENTNL::IsVDB::check_isvdb('/var/db/pkg');
 }
 
 use Test::More;

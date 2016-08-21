@@ -16,6 +16,7 @@ t/fake-portage-categories.t
 t/fake-portage-packages.t
 t/fake-portage-properties.t
 t/lib/KENTNL/FakeVDB.pm
+t/lib/KENTNL/IsVDB.pm
 t/portage-categories.t
 t/portage-packages.t
 t/portage-properties.t
